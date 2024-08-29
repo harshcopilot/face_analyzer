@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Form Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Submit Data</h2>
+        <form id="apiForm">
+            <div class="form-group">
+                <label for="subscriptionkey">Subscription Key</label>
+                <input type="text" id="subscriptionkey" name="subscriptionkey" value="c464a5de-1652-40e2-9978-fb69e2558695">
+            </div>
+            <div class="form-group">
+                <label for="documentnumber">Document Number</label>
+                <input type="text" id="documentnumber" name="documentnumber" value="DwDIPKHv7x2zrJXkP4W8">
+            </div>
+            <div class="form-group">
+                <label for="firstname">First Name</label>
+                <input type="text" id="firstname" name="firstname" value="string">
+            </div>
+            <div class="form-group">
+                <label for="lastname">Last Name</label>
+                <input type="text" id="lastname" name="lastname" value="string">
+            </div>
+            <div class="form-group">
+                <label for="ipaddress">IP Address</label>
+                <input type="text" id="ipaddress" name="ipaddress" value="127.0.0.1">
+            </div>
+            <div class="form-group">
+                <label for="languagecode">Language Code</label>
+                <input type="text" id="languagecode" name="languagecode" value="en-US">
+            </div>
+            <div class="form-group">
+                <label for="returnURL">Return URL</label>
+                <input type="text" id="returnURL" name="returnURL" value="https://example.com/return">
+            </div>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+        <div class="response" id="response"></div>
+        <div id="link"></div>
+    </div>
+
+    <script>
+        function submitForm() {
+            const form = document.getElementById('apiForm');
+            const data = {
+                subscriptionkey: form.subscriptionkey.value,
+                documentnumber: form.documentnumber.value,
+                firstname: form.firstname.value,
+                lastname: form.lastname.value,
+                ipaddress: form.ipaddress.value,
+                languagecode: form.languagecode.value
+            };
+
+            fetch('https://sbjvgc56cf.execute-api.eu-north-1.amazonaws.com/dev/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const token = data.token; // Assuming the response includes a token field
+                const returnURL = form.returnURL.value;
+                const generatedLink = `link?token=${encodeURIComponent(token)}&returnURL=${encodeURIComponent(returnURL)}`;
+                document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+                document.getElementById('link').innerHTML = `<p>Generated Link: <a href="${generatedLink}" target="_blank">${generatedLink}</a></p>`;
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Error: ' + error.message;
+            });
+        }
+    </script>
+</body>
+</html>
